@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: "Capa Bronze existente del proyecto NYC Yellow Taxi."
+    schema: public
+    tables:
+      - name: yellow_tripdata
+        description: "Datos originales de viajes almacenados en PostgreSQL."
+
+  - name: silver
+    description: "Capa Silver productiva, utilizada como fuente de lectura."
+    schema: silver
+    tables:
+      - name: trips_clean
+        description: "Viajes depurados y enriquecidos."
+
+  - name: gold
+    description: "Dimensiones Gold existentes, utilizadas solo para lectura."
+    schema: gold
+    tables:
+      - name: dim_fecha
+      - name: dim_hora
+      - name: dim_zona
+      - name: dim_vendor
+      - name: dim_tarifa
+      - name: dim_pago

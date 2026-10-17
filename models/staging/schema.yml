@@ -1,0 +1,66 @@
+version: 2
+
+models:
+  - name: stg_yellow_tripdata
+    description: >
+      Vista de staging que expone los registros de Bronze sin
+      aplicar filtros ni modificar los datos de origen.
+    columns:
+      - name: source_file
+        description: Archivo Parquet del que procede el registro.
+      - name: loaded_at
+        description: Fecha y hora de carga del registro en Bronze.
+
+  - name: int_trips_clean_validation
+    description: >
+      Vista de validación que aplica las reglas de elegibilidad
+      y calcula atributos derivados equivalentes a los de Silver.
+    columns:
+      - name: tpep_pickup_datetime
+        description: Fecha y hora de recogida del viaje.
+      - name: tpep_dropoff_datetime
+        description: Fecha y hora de finalización del viaje.
+      - name: duracion_min
+        description: Duración calculada del viaje en minutos.
+      - name: velocidad_mph
+        description: Velocidad calculada en millas por hora.
+      - name: flag_distancia_no_positiva
+        description: Indica si la distancia es menor o igual a cero.
+      - name: flag_tarifa_no_positiva
+        description: Indica si la tarifa base es menor o igual a cero.
+      - name: flag_duracion_negativa
+        description: Indica si la entrega precede a la recogida.
+      - name: flag_distancia_extrema
+        description: Indica si la distancia supera las 100 millas.
+
+  - name: int_dq_rules_validation
+    description: >
+      Resumen de las reglas RC-01 y RC-02 agrupadas por archivo
+      y periodo de origen. No escribe en silver.dq_log.
+    columns:
+      - name: source_file
+        description: Archivo de origen.
+      - name: periodo
+        description: Periodo AAAA-MM extraído del nombre del archivo.
+      - name: total_origen
+        description: Número de registros de origen del grupo.
+      - name: rc01_afectados
+        description: Registros afectados por la regla RC-01.
+      - name: rc02_duracion_negativa
+        description: Registros con duración negativa.
+
+  - name: fct_trips_validation
+    description: >
+      Vista de validación de la tabla de hechos Gold. Lee Silver y las
+      dimensiones productivas sin modificar las tablas de producción.
+    columns:
+      - name: fecha_key
+        description: Clave de fecha de recogida.
+        data_tests:
+          - not_null
+      - name: fecha_hora_recogida
+        description: Fecha y hora de recogida.
+        data_tests:
+          - not_null
+      - name: source_file
+        description: Archivo de origen del viaje.
